@@ -4,7 +4,7 @@ from datetime import date
 # 1. CONFIGURATION DE LA PAGE (Mode sombre et titre)
 st.set_page_config(
     page_title="ARQUUS - Gestion de Maintenance",
-    page_icon="🚜",
+    page_icon=" I ",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
