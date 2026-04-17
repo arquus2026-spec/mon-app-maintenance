@@ -7,169 +7,203 @@ from datetime import date
 if "page" not in st.session_state:
     st.session_state.page = "Accueil"
 
+if "maintenance_tab" not in st.session_state:
+    st.session_state.maintenance_tab = "Tableau de bord"
+
 # ---------------------------
-# CONFIG PAGE
+# CONFIG
 # ---------------------------
 st.set_page_config(
-    page_title="ARQUUS - Système de Maintenance",
-    layout="centered",
-    initial_sidebar_state="collapsed"
+    page_title="ARQUUS - Maintenance",
+    layout="wide"
 )
 
 # ---------------------------
-# STYLE
+# STYLE (DA PROCHE SCREEN)
 # ---------------------------
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-html, body, [class*="st-"] {
-    font-family: 'Roboto', sans-serif;
-}
-
 .stApp {
     background-color: #0B0E14;
+    color: #ADBAC7;
 }
 
+/* TITRE */
 h1 {
-    font-weight: 300 !important;
-    color: #FFFFFF !important;
-    text-align: center;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    padding-top: 2rem;
+    color: white;
+    font-weight: 400;
 }
 
-.date-text {
-    text-align: center;
-    color: #5E6772;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-    margin-bottom: 3rem;
+/* SIDEBAR */
+section[data-testid="stSidebar"] {
+    background-color: #11151C;
 }
 
+/* BOUTONS MENU */
 div.stButton > button {
     width: 100%;
-    border-radius: 4px;
-    border: 1px solid #2D333B;
-    background-color: #161B22;
+    background-color: transparent;
+    border: none;
     color: #ADBAC7;
-    padding: 30px 10px;
-    text-transform: uppercase;
-    transition: 0.2s;
+    text-align: left;
+    padding: 10px;
 }
 
 div.stButton > button:hover {
-    border-color: #E62E2E;
+    background-color: #1C2128;
     color: white;
 }
 
-#MainMenu, footer, header {visibility: hidden;}
+/* CARDS */
+.card {
+    background-color: #161B22;
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px solid #2D333B;
+    margin-bottom: 15px;
+}
+
+/* LABEL */
+.label {
+    font-size: 12px;
+    color: #5E6772;
+    text-transform: uppercase;
+}
+
+/* INPUT */
+input, textarea {
+    background-color: #0B0E14 !important;
+    color: white !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------
-# SIDEBAR
+# SIDEBAR NAV
 # ---------------------------
-st.sidebar.markdown("### MODULES")
+st.sidebar.markdown("### NAVIGATION")
 
-if st.sidebar.button("Accueil"):
+if st.sidebar.button("🏠 Accueil"):
     st.session_state.page = "Accueil"
 
-if st.sidebar.button("Unité Opérateur"):
-    st.session_state.page = "Opérateur"
-
-if st.sidebar.button("Gestion Maintenance"):
+if st.sidebar.button("⚙️ Gestion Maintenance"):
     st.session_state.page = "Maintenance"
 
 # ---------------------------
-# ROUTER
+# PAGE ACCUEIL
 # ---------------------------
-page = st.session_state.page
+if st.session_state.page == "Accueil":
+    st.title("ENTRETIEN | AIRE DE LAVAGE – ARQUUS")
 
-# ---------------------------
-# ACCUEIL
-# ---------------------------
-if page == "Accueil":
-    st.title("Entretien | AIRE DE LAVAGE – ARQUUS")
-
-    aujourdhui = date.today().strftime("%d . %m . %Y")
-    st.markdown(f"<p class='date-text'>Date : {aujourdhui}</p>", unsafe_allow_html=True)
+    aujourdhui = date.today().strftime("%d / %m / %Y")
+    st.write(f"Date : {aujourdhui}")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("Opérateur"):
-            st.session_state.page = "Opérateur"
-            st.rerun()
-
-    with col2:
-        if st.button("Gestion maintenance"):
+        if st.button("GESTION MAINTENANCE"):
             st.session_state.page = "Maintenance"
             st.rerun()
 
 # ---------------------------
-# OPÉRATEUR
+# PAGE MAINTENANCE
 # ---------------------------
-elif page == "Opérateur":
-    st.title("Unité Opérateur")
-    st.write("Interface opérateur")
+elif st.session_state.page == "Maintenance":
 
-    if st.button("Retour"):
-        st.session_state.page = "Accueil"
-        st.rerun()
-
-# ---------------------------
-# MAINTENANCE
-# ---------------------------
-elif page == "Maintenance":
     st.title("Gestion Maintenance")
-    st.markdown("---")
 
-    tabs = st.tabs([
-        "📊 Tableau de bord",
-        "📅 Calendrier",
-        "✔️ Contrôles",
-        "⏱️ Compteurs",
-        "👷 Intervenants",
-        "🕓 Historique"
-    ])
+    # -------- SUB MENU (comme ton screen)
+    col_menu, col_content = st.columns([1, 4])
 
-    # TAB 1
-    with tabs[0]:
-        st.subheader("Tableau de bord")
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Machines", "24")
-        col2.metric("Maintenances", "3")
-        col3.metric("Alertes", "1")
+    with col_menu:
+        st.markdown("### Navigation")
 
-    # TAB 2
-    with tabs[1]:
-        st.subheader("Calendrier")
-        st.info("À connecter")
+        if st.button("📊 Tableau de bord"):
+            st.session_state.maintenance_tab = "dashboard"
 
-    # TAB 3
-    with tabs[2]:
-        st.checkbox("Contrôle filtre")
-        st.checkbox("Inspection")
+        if st.button("📅 Calendrier"):
+            st.session_state.maintenance_tab = "calendar"
 
-    # TAB 4
-    with tabs[3]:
-        st.number_input("Heures", 0, 5000, 1200)
+        if st.button("✔️ Contrôle périodique"):
+            st.session_state.maintenance_tab = "control"
 
-    # TAB 5
-    with tabs[4]:
-        nom = st.text_input("Nom")
-        if st.button("Ajouter"):
-            st.success(f"{nom} ajouté")
+        if st.button("⏱️ Compteurs"):
+            st.session_state.maintenance_tab = "counters"
 
-    # TAB 6
-    with tabs[5]:
-        st.table({
-            "Date": ["01/03"],
-            "Action": ["Contrôle"]
-        })
+        if st.button("👷 Intervenants"):
+            st.session_state.maintenance_tab = "intervenants"
 
-    if st.button("Retour accueil"):
-        st.session_state.page = "Accueil"
-        st.rerun()
+        if st.button("🕓 Historique"):
+            st.session_state.maintenance_tab = "history"
+
+    # -------- CONTENU
+    with col_content:
+
+        tab = st.session_state.maintenance_tab
+
+        # ---------------- DASHBOARD
+        if tab == "dashboard":
+            st.subheader("Tableau de bord")
+
+            col1, col2, col3 = st.columns(3)
+
+            col1.metric("Équipements", "24")
+            col2.metric("Maintenances", "3")
+            col3.metric("Alertes", "1")
+
+        # ---------------- CALENDAR
+        elif tab == "calendar":
+            st.subheader("Calendrier")
+            st.info("Calendrier à connecter")
+
+        # ---------------- CONTROL
+        elif tab == "control":
+            st.subheader("Contrôles périodiques")
+
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.checkbox("Contrôle journalier")
+            st.checkbox("Contrôle hebdomadaire")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        # ---------------- COMPTEURS
+        elif tab == "counters":
+            st.subheader("Compteurs")
+
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.number_input("Heures machine", 0, 5000, 1200)
+            st.number_input("Cycles", 0, 10000, 350)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        # ---------------- INTERVENANTS (proche de ton screen)
+        elif tab == "intervenants":
+            st.subheader("Intervenants")
+
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+
+            st.text_input("Nom / Libellé")
+            st.text_input("Rôle")
+            st.text_input("Téléphone")
+            st.text_input("Email")
+
+            st.checkbox("Intervenant extérieur")
+
+            st.markdown("Couleur")
+            cols = st.columns(10)
+            for i in range(10):
+                cols[i].markdown("🔘")
+
+            if st.button("Ajouter"):
+                st.success("Intervenant ajouté")
+
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        # ---------------- HISTORIQUE
+        elif tab == "history":
+            st.subheader("Historique")
+
+            st.table({
+                "Date": ["17/04/2026"],
+                "Action": ["Contrôle effectué"],
+                "Intervenant": ["Dupont"]
+            })
