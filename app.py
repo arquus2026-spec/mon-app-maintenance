@@ -21,6 +21,13 @@ st.markdown("""
         background-color: #0B0E14;
     }
 
+    /* Positionnement du logo */
+    .logo-container {
+        position: absolute;
+        top: -50px;
+        left: -100px;
+    }
+
     /* Titre Principal : sobre et élégant */
     h1 {
         font-weight: 300 !important;
@@ -71,7 +78,10 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVIGATION LATÉRALE
+# 3. AFFICHAGE DU LOGO EN HAUT À GAUCHE
+st.image("https://www.arquus-defense.com/themes/custom/arquus/logo.svg", width=150)
+
+# 4. NAVIGATION LATÉRALE
 st.sidebar.markdown("### MODULES")
 selection = st.sidebar.radio("Sélectionner une unité :", [
     "Accueil", 
@@ -81,7 +91,7 @@ selection = st.sidebar.radio("Sélectionner une unité :", [
     "Gestion Maintenance"
 ])
 
-# 4. LOGIQUE DES PAGES
+# 5. LOGIQUE DES PAGES
 if selection == "Accueil":
     # En-tête
     st.title("Entretien | AIRE DE LAVAGE – ARQUUS")
