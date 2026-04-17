@@ -84,11 +84,11 @@ selection = st.sidebar.radio("Sélectionner une unité :", [
 # 4. LOGIQUE DES PAGES
 if selection == "Accueil":
     # En-tête
-    st.title("Système de Maintenance")
+    st.title("Entretien | AIRE DE LAVAGE – ARQUUS")
     
     # Date formatée professionnellement
     aujourdhui = date.today().strftime("%d . %m . %Y")
-    st.markdown(f"<p class='date-text'>Session du {aujourdhui}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p class='date-text'>Date : {aujourdhui}</p>", unsafe_allow_html=True)
     
     # Structure de la grille de navigation
     col_l, col_main, col_r = st.columns([1, 6, 1])
