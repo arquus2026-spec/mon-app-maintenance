@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import date
 
 # ---------------------------
-# INIT NAVIGATION
+# INIT SESSION
 # ---------------------------
 if "page" not in st.session_state:
     st.session_state.page = "Accueil"
@@ -13,13 +13,10 @@ if "maintenance_tab" not in st.session_state:
 # ---------------------------
 # CONFIG
 # ---------------------------
-st.set_page_config(
-    page_title="ARQUUS - Maintenance",
-    layout="wide"
-)
+st.set_page_config(layout="wide")
 
 # ---------------------------
-# STYLE (BLANC + INDUSTRIEL)
+# STYLE
 # ---------------------------
 st.markdown("""
 <style>
@@ -28,62 +25,37 @@ st.markdown("""
     color: #1C1C1C;
 }
 
-/* TITRES */
-h1, h2, h3 {
-    color: #1C1C1C;
-    font-weight: 500;
-}
-
-/* SIDEBAR */
 section[data-testid="stSidebar"] {
     background-color: #FFFFFF;
     border-right: 1px solid #E0E0E0;
 }
 
-/* BOUTONS MENU */
 div.stButton > button {
     width: 100%;
     background-color: transparent;
     border: none;
-    color: #333;
     text-align: left;
     padding: 10px;
-    border-radius: 4px;
 }
 
 div.stButton > button:hover {
     background-color: #E9ECEF;
 }
 
-/* CARDS */
 .card {
-    background-color: #FFFFFF;
+    background-color: white;
     padding: 20px;
     border-radius: 6px;
     border: 1px solid #E0E0E0;
     margin-bottom: 15px;
 }
-
-/* INPUTS */
-input, textarea {
-    background-color: #FFFFFF !important;
-    color: #000 !important;
-}
-
-/* METRICS */
-[data-testid="stMetric"] {
-    background-color: #FFFFFF;
-    padding: 15px;
-    border-radius: 6px;
-    border: 1px solid #E0E0E0;
-}
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------
-# SIDEBAR NAV
+# SIDEBAR
 # ---------------------------
-st.sidebar.markdown("### NAVIGATION")
+st.sidebar.title("NAVIGATION")
 
 if st.sidebar.button("Accueil"):
     st.session_state.page = "Accueil"
@@ -91,21 +63,21 @@ if st.sidebar.button("Accueil"):
 if st.sidebar.button("Gestion Maintenance"):
     st.session_state.page = "Maintenance"
 
+if st.sidebar.button("Intervenant extérieur"):
+    st.session_state.page = "Ext"
+
+if st.sidebar.button("Opérateur"):
+    st.session_state.page = "Operateur"
+
+if st.sidebar.button("Technicien site"):
+    st.session_state.page = "Tech"
+
 # ---------------------------
-# PAGE ACCUEIL
+# ACCUEIL
 # ---------------------------
 if st.session_state.page == "Accueil":
     st.title("ENTRETIEN | AIRE DE LAVAGE – ARQUUS")
-
-    aujourdhui = date.today().strftime("%d / %m / %Y")
-    st.write(f"Date : {aujourdhui}")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Gestion Maintenance"):
-            st.session_state.page = "Maintenance"
-            st.rerun()
+    st.write(date.today())
 
 # ---------------------------
 # PAGE MAINTENANCE
@@ -116,10 +88,8 @@ elif st.session_state.page == "Maintenance":
 
     col_menu, col_content = st.columns([1, 4])
 
-    # -------- MENU GAUCHE
+    # MENU
     with col_menu:
-        st.markdown("### Navigation")
-
         if st.button("Tableau de bord"):
             st.session_state.maintenance_tab = "dashboard"
 
@@ -138,44 +108,49 @@ elif st.session_state.page == "Maintenance":
         if st.button("Historique"):
             st.session_state.maintenance_tab = "history"
 
-    # -------- CONTENU
+    # CONTENU
     with col_content:
 
         tab = st.session_state.maintenance_tab
 
-        # DASHBOARD
+        # ---------------- DASHBOARD
         if tab == "dashboard":
             st.subheader("Tableau de bord")
-
             col1, col2, col3 = st.columns(3)
             col1.metric("Équipements", "24")
             col2.metric("Maintenances", "3")
             col3.metric("Alertes", "1")
 
-        # CALENDRIER
+        # ---------------- CALENDRIER
         elif tab == "calendar":
             st.subheader("Calendrier")
-            st.info("Module calendrier à connecter")
+            st.info("À connecter")
 
-        # CONTROLES
+        # ---------------- CONTROLE PERIODIQUE
         elif tab == "control":
-            st.subheader("Contrôles périodiques")
+            st.subheader("Contrôle périodique")
 
             st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.checkbox("Contrôle journalier")
-            st.checkbox("Contrôle hebdomadaire")
+
+            st.write("Créer / modifier une gamme")
+
+            nom_gamme = st.text_input("Nom de la gamme")
+            frequence = st.selectbox("Fréquence", ["Journalier", "Hebdomadaire", "Mensuel"])
+            lien = st.text_input("Lien (OneDrive / Doc)")
+
+            if st.button("Enregistrer la gamme"):
+                st.success("Gamme enregistrée")
+
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # COMPTEURS
+        # ---------------- COMPTEURS
         elif tab == "counters":
             st.subheader("Compteurs")
 
-            st.markdown('<div class="card">', unsafe_allow_html=True)
             st.number_input("Heures machine", 0, 5000, 1200)
             st.number_input("Cycles", 0, 10000, 350)
-            st.markdown('</div>', unsafe_allow_html=True)
 
-        # INTERVENANTS
+        # ---------------- INTERVENANTS
         elif tab == "intervenants":
             st.subheader("Intervenants")
 
@@ -185,25 +160,47 @@ elif st.session_state.page == "Maintenance":
             st.text_input("Rôle")
             st.text_input("Téléphone")
             st.text_input("Email")
+            st.text_input("Contact principal")
 
-            st.checkbox("Intervenant extérieur")
+            ext = st.checkbox("Intervenant extérieur")
 
             st.write("Couleur")
-            cols = st.columns(10)
-            for i in range(10):
-                cols[i].button(" ", key=f"color_{i}")
+            cols = st.columns(8)
+            for i in range(8):
+                cols[i].button(" ", key=f"c{i}")
 
-            if st.button("Ajouter"):
-                st.success("Intervenant ajouté")
+            st.markdown("---")
+
+            st.write("Gammes associées")
+
+            st.text_input("Gamme 1 (lien)")
+            st.text_input("Gamme 2 (lien)")
+
+            if st.button("Ajouter intervenant"):
+                st.success("Intervenant enregistré")
 
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # HISTORIQUE
+        # ---------------- HISTORIQUE
         elif tab == "history":
             st.subheader("Historique")
-
             st.table({
                 "Date": ["17/04/2026"],
-                "Action": ["Contrôle effectué"],
+                "Action": ["Contrôle"],
                 "Intervenant": ["Dupont"]
             })
+
+# ---------------------------
+# AUTRES MODULES
+# ---------------------------
+elif st.session_state.page == "Ext":
+    st.title("Intervenants extérieurs")
+    st.write("Liste + gestion des prestataires externes")
+
+elif st.session_state.page == "Operateur":
+    st.title("Opérateurs")
+    st.write("Gestion des opérateurs")
+
+elif st.session_state.page == "Tech":
+    st.title("Techniciens site")
+    st.write("Gestion des techniciens internes")
