@@ -1,185 +1,175 @@
 import streamlit as st
 from datetime import date
 
-# 1. CONFIGURATION DE LA PAGE
+# ---------------------------
+# INIT NAVIGATION
+# ---------------------------
+if "page" not in st.session_state:
+    st.session_state.page = "Accueil"
+
+# ---------------------------
+# CONFIG PAGE
+# ---------------------------
 st.set_page_config(
     page_title="ARQUUS - Système de Maintenance",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# 2. STYLE PROFESSIONNEL (CSS)
+# ---------------------------
+# STYLE
+# ---------------------------
 st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
-    html, body, [class*="st-"] {
-        font-family: 'Roboto', sans-serif;
-    }
+html, body, [class*="st-"] {
+    font-family: 'Roboto', sans-serif;
+}
 
-    .stApp {
-        background-color: #0B0E14;
-    }
+.stApp {
+    background-color: #0B0E14;
+}
 
-    h1 {
-        font-weight: 300 !important;
-        color: #FFFFFF !important;
-        text-align: center;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        padding-top: 2rem;
-        padding-bottom: 0.5rem;
-    }
+h1 {
+    font-weight: 300 !important;
+    color: #FFFFFF !important;
+    text-align: center;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding-top: 2rem;
+}
 
-    .date-text {
-        text-align: center;
-        color: #5E6772;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 4rem;
-    }
+.date-text {
+    text-align: center;
+    color: #5E6772;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    margin-bottom: 3rem;
+}
 
-    div.stButton > button {
-        width: 100%;
-        border-radius: 4px;
-        border: 1px solid #2D333B;
-        background-color: #161B22;
-        color: #ADBAC7;
-        padding: 30px 10px;
-        font-size: 14px;
-        font-weight: 400;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: all 0.2s ease;
-    }
+div.stButton > button {
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #2D333B;
+    background-color: #161B22;
+    color: #ADBAC7;
+    padding: 30px 10px;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
 
-    div.stButton > button:hover {
-        border-color: #E62E2E;
-        color: white;
-        background-color: #1C2128;
-    }
-    
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-    """, unsafe_allow_html=True)
+div.stButton > button:hover {
+    border-color: #E62E2E;
+    color: white;
+}
 
-# 3. NAVIGATION LATÉRALE
+#MainMenu, footer, header {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------------------
+# SIDEBAR
+# ---------------------------
 st.sidebar.markdown("### MODULES")
-selection = st.sidebar.radio("Sélectionner une unité :", [
-    "Accueil", 
-    "Unité Opérateur", 
-    "Unité Technicien", 
-    "Intervenants Extérieurs",
-    "Gestion Maintenance"
-])
 
-# 4. LOGIQUE DES PAGES
-if selection == "Accueil":
+if st.sidebar.button("Accueil"):
+    st.session_state.page = "Accueil"
+
+if st.sidebar.button("Unité Opérateur"):
+    st.session_state.page = "Opérateur"
+
+if st.sidebar.button("Gestion Maintenance"):
+    st.session_state.page = "Maintenance"
+
+# ---------------------------
+# ROUTER
+# ---------------------------
+page = st.session_state.page
+
+# ---------------------------
+# ACCUEIL
+# ---------------------------
+if page == "Accueil":
     st.title("Entretien | AIRE DE LAVAGE – ARQUUS")
-    
+
     aujourdhui = date.today().strftime("%d . %m . %Y")
     st.markdown(f"<p class='date-text'>Date : {aujourdhui}</p>", unsafe_allow_html=True)
-    
-    col_l, col_main, col_r = st.columns([1, 6, 1])
 
-    with col_main:
-        grid_col1, grid_col2 = st.columns(2)
-        
-        with grid_col1:
-            if st.button("Opérateur"):
-                st.info("Chargement du module Opérateur...")
-            
-            if st.button("Technicien"):
-                st.info("Chargement du module Technicien...")
+    col1, col2 = st.columns(2)
 
-        with grid_col2:
-            if st.button("Intervenants"):
-                st.info("Chargement du module Intervenants...")
-                
-            if st.button("Gestion maintenance"):
-                st.info("Chargement du module Gestion...")
+    with col1:
+        if st.button("Opérateur"):
+            st.session_state.page = "Opérateur"
+            st.rerun()
 
-elif selection == "Unité Opérateur":
+    with col2:
+        if st.button("Gestion maintenance"):
+            st.session_state.page = "Maintenance"
+            st.rerun()
+
+# ---------------------------
+# OPÉRATEUR
+# ---------------------------
+elif page == "Opérateur":
     st.title("Unité Opérateur")
-    st.markdown("---")
-    st.write("Interface de saisie des données d'exploitation.")
-    if st.button("Retour au menu principal"):
+    st.write("Interface opérateur")
+
+    if st.button("Retour"):
+        st.session_state.page = "Accueil"
         st.rerun()
 
-elif selection == "Gestion Maintenance":
+# ---------------------------
+# MAINTENANCE
+# ---------------------------
+elif page == "Maintenance":
     st.title("Gestion Maintenance")
     st.markdown("---")
 
-    # ONGLET PRINCIPAL
     tabs = st.tabs([
         "📊 Tableau de bord",
         "📅 Calendrier",
-        "✔️ Contrôles périodiques",
+        "✔️ Contrôles",
         "⏱️ Compteurs",
         "👷 Intervenants",
         "🕓 Historique"
     ])
 
-    # 1. TABLEAU DE BORD
+    # TAB 1
     with tabs[0]:
         st.subheader("Tableau de bord")
-        st.write("Vue globale de l'état de la maintenance.")
-
         col1, col2, col3 = st.columns(3)
-        col1.metric("Équipements actifs", "24")
-        col2.metric("Maintenances en cours", "3")
-        col3.metric("Alertes", "1", delta="-1")
+        col1.metric("Machines", "24")
+        col2.metric("Maintenances", "3")
+        col3.metric("Alertes", "1")
 
-    # 2. CALENDRIER
+    # TAB 2
     with tabs[1]:
         st.subheader("Calendrier")
-        st.write("Planification des interventions.")
-        st.info("Module calendrier à connecter.")
+        st.info("À connecter")
 
-    # 3. CONTRÔLES PÉRIODIQUES
+    # TAB 3
     with tabs[2]:
-        st.subheader("Contrôles périodiques")
-        st.write("Liste des contrôles techniques.")
+        st.checkbox("Contrôle filtre")
+        st.checkbox("Inspection")
 
-        st.checkbox("Nettoyage filtres")
-        st.checkbox("Inspection visuelle")
-        st.checkbox("Contrôle pression")
-
-    # 4. COMPTEURS
+    # TAB 4
     with tabs[3]:
-        st.subheader("Compteurs")
-        st.write("Suivi des compteurs machines.")
+        st.number_input("Heures", 0, 5000, 1200)
 
-        heures = st.number_input("Heures de fonctionnement", value=1200)
-        cycles = st.number_input("Cycles effectués", value=350)
-
-        st.write(f"Heures : {heures} | Cycles : {cycles}")
-
-    # 5. INTERVENANTS
+    # TAB 5
     with tabs[4]:
-        st.subheader("Intervenants")
-        st.write("Gestion des intervenants.")
+        nom = st.text_input("Nom")
+        if st.button("Ajouter"):
+            st.success(f"{nom} ajouté")
 
-        nom = st.text_input("Nom intervenant")
-        type_interv = st.selectbox("Type", ["Technicien interne", "Prestataire externe"])
-
-        if st.button("Ajouter intervenant"):
-            st.success(f"{nom} ajouté ({type_interv})")
-
-    # 6. HISTORIQUE
+    # TAB 6
     with tabs[5]:
-        st.subheader("Historique")
-        st.write("Historique des opérations.")
-
         st.table({
-            "Date": ["01/03/2026", "15/03/2026"],
-            "Action": ["Contrôle filtre", "Remplacement pompe"],
-            "Intervenant": ["Dupont", "Société X"]
+            "Date": ["01/03"],
+            "Action": ["Contrôle"]
         })
 
-else:
-    st.title(selection)
-    st.write("Module en cours de configuration.")
+    if st.button("Retour accueil"):
+        st.session_state.page = "Accueil"
+        st.rerun()
