@@ -78,5 +78,5 @@ selection = st.sidebar.radio("Sélectionner une unité :", [
     "Unité Opérateur", 
     "Unité Technicien", 
     "Intervenants Extérieurs",
-    "Gestion Maintenance
+    "Gestion Maintenance"
     
