@@ -1,77 +1,84 @@
 import streamlit as st
-import pandas as pd
+from datetime import date
 
-# Configuration de la page (inspiré de ton titre "Entretien | AIRE DE LAVAGE")
-st.set_page_config(page_title="Entretien AIRE DE LAVAGE", layout="wide")
+# 1. CONFIGURATION DE LA PAGE (Mode sombre et titre)
+st.set_page_config(
+    page_title="ARQUUS - Gestion de Maintenance",
+    page_icon="🚜",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
-st.title("🚜 Entretien | AIRE DE LAVAGE")
-st.markdown("---")
+# 2. STYLE PERSONNALISÉ (Pour forcer l'aspect sombre et le design)
+st.markdown("""
+    <style>
+    .main {
+        background-color: #0e1117;
+    }
+    h1 {
+        color: #ffffff;
+        text-align: center;
+        border-bottom: 2px solid #ff4b4b;
+        padding-bottom: 10px;
+    }
+    .stButton>button {
+        width: 100%;
+        height: 60px;
+        font-size: 20px;
+        background-color: #262730;
+        color: white;
+        border: 1px solid #464646;
+    }
+    .stButton>button:hover {
+        border-color: #ff4b4b;
+        color: #ff4b4b;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-# --- SECTION 1 : COMPTEUR D'HEURES (Ton "H1: ALERTE") ---
-st.header("⏱️ État du Compteur")
-col1, col2 = st.columns([1, 2])
+# 3. BARRE LATÉRALE (MENU DE NAVIGATION)
+st.sidebar.title("📌 Navigation")
+selection = st.sidebar.radio("Aller vers :", [
+    "🏠 Accueil", 
+    "🔧 Entretien Aire de Lavage", 
+    "📈 Historique des Données", 
+    "⚙️ Paramètres"
+])
 
-with col1:
-    heures = st.number_input("Heures actuelles (Colonne P) :", min_value=0, value=0)
-
-with col2:
-    if heures >= 1500:
-        st.error("🚨 **MAINTENANCE CRITIQUE** : Remplacer le clapet de retenue")
-    elif heures >= 1000:
-        st.warning("⚠️ **MAINTENANCE IMPORTANTE** : Changer les joints")
-    elif heures >= 250:
-        st.info("ℹ️ **MAINTENANCE STANDARD** : Faire la vidange")
-    else:
-        st.success("✅ État opérationnel - Aucune action requise")
-
-st.markdown("---")
-
-# --- SECTION 2 : FORMULAIRE D'ENTRETIEN (Inspiré de ton tableau HTML) ---
-st.header("📝 Rapport d'Entretien")
-
-with st.expander("Ajouter une vérification", expanded=True):
-    col_a, col_b, col_c = st.columns(3)
+# 4. LOGIQUE DES PAGES
+if selection == "🏠 Accueil":
+    # Titre principal
+    st.title("🚜 GESTION DE MAINTENANCE")
     
-    with col_a:
-        date = st.date_input("Date de l'intervention")
-        activite = st.selectbox("Type d'activité", [
-            "Contrôle de niveau", 
-            "Nettoyage filtres", 
-            "Vidange", 
-            "Remplacement pièces",
-            "Autre"
-        ])
+    # Affichage de la date (comme demandé)
+    aujourdhui = date.today().strftime("%d/%m/%Y")
+    st.markdown(f"<h3 style='text-align: center; color: #aaaaaa;'>Date du jour : {aujourdhui}</h3>", unsafe_allow_html=True)
     
-    with col_b:
-        frequence = st.text_input("Fréquence (ex: 250h, Hebdo...)")
-        intervenant = st.text_input("Intervenant")
+    st.write("##") # Espace
 
-    with col_c:
-        prix_u = st.number_input("Prix Unitaire (€)", min_value=0.0, format="%.2f")
-        quantite = st.number_input("Quantité", min_value=0, value=1)
-        total_ligne = prix_u * quantite
-        st.metric("Total Ligne", f"{total_ligne:.2f} €")
+    # Création des 4 boutons/pages (en colonnes)
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("ENTRETIEN"):
+            st.info("Page d'entretien en cours de création...")
+        
+        if st.button("STATISTIQUES"):
+            st.info("Page de statistiques en cours de création...")
 
-# --- SECTION 3 : RÉCAPITULATIF (Comme ton tableau final) ---
-st.header("📊 Historique & Totaux")
+    with col2:
+        if st.button("RAPPORTS"):
+            st.info("Page de rapports en cours de création...")
+            
+        if st.button("ALERTES"):
+            st.info("Page d'alertes en cours de création...")
 
-# Simulation d'un tableau de données (dans une vraie app on brancherait une base de données)
-data = {
-    "Date": [date],
-    "Activité": [activite],
-    "Fréquence": [frequence],
-    "Intervenant": [intervenant],
-    "Prix U (€)": [prix_u],
-    "Qté": [quantite],
-    "Total (€)": [total_ligne]
-}
+elif selection == "Entretien Aire de Lavage":
+    st.title("Entretien Aire de Lavage")
+    st.write("C'est ici que nous mettrons ton tableau de maintenance plus tard.")
+    if st.button("Retour à l'accueil"):
+        st.write("Utilisez le menu à gauche pour revenir.")
 
-df = pd.DataFrame(data)
-st.table(df)
-
-# Calcul du total général (comme dans ton script HTML)
-st.subheader(f"💰 Total Général : {total_ligne:.2f} €")
-
-if st.button("Enregistrer le rapport"):
-    st.balloons()
-    st.success("Rapport enregistré localement (Interface de démo)")
+else:
+    st.title(selection)
+    st.write(f"Le contenu de la page '{selection}' sera ajouté aux étapes suivantes.")
