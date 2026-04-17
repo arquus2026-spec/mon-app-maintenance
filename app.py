@@ -1,84 +1,82 @@
 import streamlit as st
 from datetime import date
 
-# 1. CONFIGURATION DE LA PAGE (Mode sombre et titre)
+# 1. CONFIGURATION DE LA PAGE
 st.set_page_config(
-    page_title="ARQUUS - Gestion de Maintenance",
-    page_icon=" I ",
+    page_title="ARQUUS - Système de Maintenance",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# 2. STYLE PERSONNALISÉ (Pour forcer l'aspect sombre et le design)
+# 2. STYLE PROFESSIONNEL (CSS)
 st.markdown("""
     <style>
-    .main {
-        background-color: #0e1117;
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+    html, body, [class*="st-"] {
+        font-family: 'Roboto', sans-serif;
     }
+
+    .stApp {
+        background-color: #0B0E14;
+    }
+
+    /* Titre Principal : sobre et élégant */
     h1 {
-        color: #ffffff;
+        font-weight: 300 !important;
+        color: #FFFFFF !important;
         text-align: center;
-        border-bottom: 2px solid #ff4b4b;
-        padding-bottom: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        padding-top: 2rem;
+        padding-bottom: 0.5rem;
     }
-    .stButton>button {
+
+    /* Date : discrète et technique */
+    .date-text {
+        text-align: center;
+        color: #5E6772;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4rem;
+    }
+
+    /* Boutons : Style "Flat UI" industriel */
+    div.stButton > button {
         width: 100%;
-        height: 60px;
-        font-size: 20px;
-        background-color: #262730;
+        border-radius: 4px;
+        border: 1px solid #2D333B;
+        background-color: #161B22;
+        color: #ADBAC7;
+        padding: 30px 10px;
+        font-size: 14px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s ease;
+    }
+
+    /* Hover : changement de couleur subtil vers le rouge ARQUUS */
+    div.stButton > button:hover {
+        border-color: #E62E2E;
         color: white;
-        border: 1px solid #464646;
+        background-color: #1C2128;
     }
-    .stButton>button:hover {
-        border-color: #ff4b4b;
-        color: #ff4b4b;
-    }
+    
+    /* Nettoyage de l'interface Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
-# 3. BARRE LATÉRALE (MENU DE NAVIGATION)
-st.sidebar.title("Navigation")
-selection = st.sidebar.radio("Aller vers :", [
+# 3. NAVIGATION LATÉRALE
+st.sidebar.markdown("### MODULES")
+selection = st.sidebar.radio("Sélectionner une unité :", [
     "Accueil", 
-    "Entretien Aire de Lavage", 
-    "Historique des Données", 
-    "Paramètres"
-])
-
-# 4. LOGIQUE DES PAGES
-if selection == "Accueil":
-    # Titre principal
-    st.title("GESTION DE MAINTENANCE")
+    "Unité Opérateur", 
+    "Unité Technicien", 
+    "Intervenants Extérieurs",
+    "Gestion Maintenance
     
-    # Affichage de la date (comme demandé)
-    aujourdhui = date.today().strftime("%d/%m/%Y")
-    st.markdown(f"<h3 style='text-align: center; color: #aaaaaa;'>Date du jour : {aujourdhui}</h3>", unsafe_allow_html=True)
-    
-    st.write("##") # Espace
-
-    # Création des 4 boutons/pages (en colonnes)
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        if st.button("Opérateur"):
-            st.info("Page d'entretien en cours de création...")
-        
-        if st.button("Technicien"):
-            st.info("Page de statistiques en cours de création...")
-
-    with col2:
-        if st.button("Intervenants Exterieur"):
-            st.info("Page de rapports en cours de création...")
-            
-        if st.button("Gestion Mainteance"):
-            st.info("Page d'alertes en cours de création...")
-
-elif selection == "Entretien Aire de Lavage":
-    st.title("Entretien Aire de Lavage")
-    st.write("C'est ici que nous mettrons ton tableau de maintenance plus tard.")
-    if st.button("Retour à l'accueil"):
-        st.write("Utilisez le menu à gauche pour revenir.")
-
-else:
-    st.title(selection)
-    st.write(f"Le contenu de la page '{selection}' sera ajouté aux étapes suivantes.")
