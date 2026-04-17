@@ -79,4 +79,44 @@ selection = st.sidebar.radio("Sélectionner une unité :", [
     "Unité Technicien", 
     "Intervenants Extérieurs",
     "Gestion Maintenance"
+])
+
+# 4. LOGIQUE DES PAGES
+if selection == "Accueil":
+    # En-tête
+    st.title("Système de Maintenance")
     
+    # Date formatée professionnellement
+    aujourdhui = date.today().strftime("%d . %m . %Y")
+    st.markdown(f"<p class='date-text'>Session du {aujourdhui}</p>", unsafe_allow_html=True)
+    
+    # Structure de la grille de navigation
+    col_l, col_main, col_r = st.columns([1, 6, 1])
+
+    with col_main:
+        grid_col1, grid_col2 = st.columns(2)
+        
+        with grid_col1:
+            if st.button("Opérateur"):
+                st.info("Chargement du module Opérateur...")
+            
+            if st.button("Technicien"):
+                st.info("Chargement du module Technicien...")
+
+        with grid_col2:
+            if st.button("Intervenants"):
+                st.info("Chargement du module Intervenants...")
+                
+            if st.button("Gestion"):
+                st.info("Chargement du module Gestion...")
+
+elif selection == "Unité Opérateur":
+    st.title("Unité Opérateur")
+    st.markdown("---")
+    st.write("Interface de saisie des données d'exploitation.")
+    if st.button("Retour au menu principal"):
+        st.rerun()
+
+else:
+    st.title(selection)
+    st.write("Module en cours de configuration.")
