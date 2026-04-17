@@ -60,17 +60,17 @@ if selection == "Accueil":
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("ENTRETIEN"):
+        if st.button("Opérateur"):
             st.info("Page d'entretien en cours de création...")
         
-        if st.button("STATISTIQUES"):
+        if st.button("Technicien"):
             st.info("Page de statistiques en cours de création...")
 
     with col2:
-        if st.button("RAPPORTS"):
+        if st.button("Intervenants Exterieur"):
             st.info("Page de rapports en cours de création...")
             
-        if st.button("ALERTES"):
+        if st.button("Gestion Mainteance"):
             st.info("Page d'alertes en cours de création...")
 
 elif selection == "Entretien Aire de Lavage":
