@@ -1,14 +1,5 @@
 import streamlit as st
-from datetime import date
-
-# ---------------------------
-# INIT SESSION
-# ---------------------------
-if "page" not in st.session_state:
-    st.session_state.page = "Accueil"
-
-if "maintenance_tab" not in st.session_state:
-    st.session_state.maintenance_tab = "dashboard"
+from datetime import datetime, timedelta, date
 
 # ---------------------------
 # CONFIG
@@ -16,191 +7,193 @@ if "maintenance_tab" not in st.session_state:
 st.set_page_config(layout="wide")
 
 # ---------------------------
-# STYLE
+# INIT DATA
+# ---------------------------
+if "page" not in st.session_state:
+    st.session_state.page = "Accueil"
+
+if "intervenants" not in st.session_state:
+    st.session_state.intervenants = [
+        {"nom": "Opérateurs", "type": "Opérateur"},
+        {"nom": "Techniciens", "type": "Technicien"}
+    ]
+
+if "gammes" not in st.session_state:
+    st.session_state.gammes = []
+
+if "selected_intervenant" not in st.session_state:
+    st.session_state.selected_intervenant = 0
+
+# ---------------------------
+# STYLE (BLANC PROPRE)
 # ---------------------------
 st.markdown("""
 <style>
 .stApp {
     background-color: #F5F6F8;
-    color: #1C1C1C;
 }
 
 section[data-testid="stSidebar"] {
-    background-color: #FFFFFF;
-    border-right: 1px solid #E0E0E0;
-}
-
-div.stButton > button {
-    width: 100%;
-    background-color: transparent;
-    border: none;
-    text-align: left;
-    padding: 10px;
-}
-
-div.stButton > button:hover {
-    background-color: #E9ECEF;
+    background-color: white;
+    border-right: 1px solid #ddd;
 }
 
 .card {
     background-color: white;
     padding: 20px;
+    border: 1px solid #ddd;
     border-radius: 6px;
-    border: 1px solid #E0E0E0;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------
-# SIDEBAR
+# UTILS
 # ---------------------------
-st.sidebar.title("NAVIGATION")
+def next_date(d, freq):
+    map_days = {
+        "1j":1,"1s":7,"2s":14,"1m":30,"3m":90,
+        "6m":180,"1a":365,"2a":730,"3a":1095,
+        "5a":1825,"10a":3650
+    }
+    return d + timedelta(days=map_days[freq])
+
+def avoid_weekend(d):
+    if d.weekday() == 5:
+        return d + timedelta(days=2)
+    if d.weekday() == 6:
+        return d + timedelta(days=1)
+    return d
+
+# ---------------------------
+# SIDEBAR NAV
+# ---------------------------
+st.sidebar.title("Navigation")
 
 if st.sidebar.button("Accueil"):
     st.session_state.page = "Accueil"
 
+if st.sidebar.button("Intervenants"):
+    st.session_state.page = "Intervenants"
+
 if st.sidebar.button("Gestion Maintenance"):
     st.session_state.page = "Maintenance"
 
-if st.sidebar.button("Intervenant extérieur"):
-    st.session_state.page = "Ext"
-
-if st.sidebar.button("Opérateur"):
-    st.session_state.page = "Operateur"
-
-if st.sidebar.button("Technicien site"):
-    st.session_state.page = "Tech"
-
 # ---------------------------
-# ACCUEIL
+# PAGE INTERVENANTS
 # ---------------------------
-if st.session_state.page == "Accueil":
-    st.title("ENTRETIEN | AIRE DE LAVAGE – ARQUUS")
-    st.write(date.today())
+if st.session_state.page == "Intervenants":
+
+    col_left, col_right = st.columns([1, 3])
+
+    # -------- LISTE GAUCHE
+    with col_left:
+        st.subheader("Intervenants")
+
+        for i, inter in enumerate(st.session_state.intervenants):
+            if st.button(inter["nom"], key=f"int_{i}"):
+                st.session_state.selected_intervenant = i
+
+        if st.button("Ajouter"):
+            st.session_state.intervenants.append({"nom": "Nouveau", "type": ""})
+
+    # -------- FORMULAIRE DROITE
+    with col_right:
+        i = st.session_state.selected_intervenant
+        inter = st.session_state.intervenants[i]
+
+        st.subheader("Modifier")
+
+        nom = st.text_input("Nom", inter["nom"])
+        type_i = st.selectbox("Type", ["Opérateur","Technicien","Externe"])
+
+        if st.button("Sauvegarder"):
+            st.session_state.intervenants[i]["nom"] = nom
+            st.session_state.intervenants[i]["type"] = type_i
+
+        if st.button("Supprimer"):
+            st.session_state.intervenants.pop(i)
+            st.rerun()
 
 # ---------------------------
 # PAGE MAINTENANCE
 # ---------------------------
 elif st.session_state.page == "Maintenance":
 
-    st.title("Gestion Maintenance")
+    tab = st.radio("Menu", ["Vue globale", "Nouvelle gamme"])
 
-    col_menu, col_content = st.columns([1, 4])
+    # -------- VUE GLOBALE
+    if tab == "Vue globale":
 
-    # MENU
-    with col_menu:
-        if st.button("Tableau de bord"):
-            st.session_state.maintenance_tab = "dashboard"
+        st.subheader("Intervenants et gammes")
 
-        if st.button("Calendrier"):
-            st.session_state.maintenance_tab = "calendar"
+        for inter in st.session_state.intervenants:
+            st.markdown(f"### {inter['nom']}")
 
-        if st.button("Contrôle périodique"):
-            st.session_state.maintenance_tab = "control"
+            linked = [g for g in st.session_state.gammes if g["intervenant"] == inter["nom"]]
 
-        if st.button("Compteurs"):
-            st.session_state.maintenance_tab = "counters"
+            if not linked:
+                st.write("Aucune gamme")
 
-        if st.button("Intervenants"):
-            st.session_state.maintenance_tab = "intervenants"
+            for g in linked:
+                st.write(f"{g['frequence']} | {g['date']}")
 
-        if st.button("Historique"):
-            st.session_state.maintenance_tab = "history"
+    # -------- CREER GAMME
+    if tab == "Nouvelle gamme":
 
-    # CONTENU
-    with col_content:
+        st.subheader("Créer une gamme")
 
-        tab = st.session_state.maintenance_tab
+        intervenant = st.selectbox(
+            "Intervenant",
+            [i["nom"] for i in st.session_state.intervenants]
+        )
 
-        # ---------------- DASHBOARD
-        if tab == "dashboard":
-            st.subheader("Tableau de bord")
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Équipements", "24")
-            col2.metric("Maintenances", "3")
-            col3.metric("Alertes", "1")
+        frequence = st.selectbox("Fréquence", [
+            "1j","1s","2s","1m","3m","6m","1a","2a","3a","5a","10a"
+        ])
 
-        # ---------------- CALENDRIER
-        elif tab == "calendar":
-            st.subheader("Calendrier")
-            st.info("À connecter")
+        date_depart = st.date_input("Date première intervention")
 
-        # ---------------- CONTROLE PERIODIQUE
-        elif tab == "control":
-            st.subheader("Contrôle périodique")
+        lien = st.text_input("Lien / document")
 
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-
-            st.write("Créer / modifier une gamme")
-
-            nom_gamme = st.text_input("Nom de la gamme")
-            frequence = st.selectbox("Fréquence", ["Journalier", "Hebdomadaire", "Mensuel"])
-            lien = st.text_input("Lien (OneDrive / Doc)")
-
-            if st.button("Enregistrer la gamme"):
-                st.success("Gamme enregistrée")
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        # ---------------- COMPTEURS
-        elif tab == "counters":
-            st.subheader("Compteurs")
-
-            st.number_input("Heures machine", 0, 5000, 1200)
-            st.number_input("Cycles", 0, 10000, 350)
-
-        # ---------------- INTERVENANTS
-        elif tab == "intervenants":
-            st.subheader("Intervenants")
-
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-
-            st.text_input("Nom / Libellé")
-            st.text_input("Rôle")
-            st.text_input("Téléphone")
-            st.text_input("Email")
-            st.text_input("Contact principal")
-
-            ext = st.checkbox("Intervenant extérieur")
-
-            st.write("Couleur")
-            cols = st.columns(8)
-            for i in range(8):
-                cols[i].button(" ", key=f"c{i}")
-
-            st.markdown("---")
-
-            st.write("Gammes associées")
-
-            st.text_input("Gamme 1 (lien)")
-            st.text_input("Gamme 2 (lien)")
-
-            if st.button("Ajouter intervenant"):
-                st.success("Intervenant enregistré")
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        # ---------------- HISTORIQUE
-        elif tab == "history":
-            st.subheader("Historique")
-            st.table({
-                "Date": ["17/04/2026"],
-                "Action": ["Contrôle"],
-                "Intervenant": ["Dupont"]
+        if st.button("Créer la gamme"):
+            st.session_state.gammes.append({
+                "intervenant": intervenant,
+                "frequence": frequence,
+                "date": date_depart,
+                "lien": lien
             })
+            st.success("Gamme créée")
+
+        st.markdown("---")
+
+        st.subheader("Modifier / Supprimer")
+
+        for i, g in enumerate(st.session_state.gammes):
+            st.write(g)
+
+            col1, col2 = st.columns(2)
+
+            if col1.button("Supprimer", key=f"sup_{i}"):
+                st.session_state.gammes.pop(i)
+                st.rerun()
 
 # ---------------------------
-# AUTRES MODULES
+# PAGE ACCUEIL = CALENDRIER
 # ---------------------------
-elif st.session_state.page == "Ext":
-    st.title("Intervenants extérieurs")
-    st.write("Liste + gestion des prestataires externes")
+elif st.session_state.page == "Accueil":
 
-elif st.session_state.page == "Operateur":
-    st.title("Opérateurs")
-    st.write("Gestion des opérateurs")
+    st.subheader("Calendrier (simulation)")
 
-elif st.session_state.page == "Tech":
-    st.title("Techniciens site")
-    st.write("Gestion des techniciens internes")
+    for g in st.session_state.gammes:
+
+        d = datetime.combine(g["date"], datetime.min.time())
+
+        st.markdown(f"### {g['intervenant']}")
+
+        for _ in range(10):
+            d = next_date(d, g["frequence"])
+            d = avoid_weekend(d)
+
+            st.write(d.date())
