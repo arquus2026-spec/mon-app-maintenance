@@ -8,7 +8,7 @@ if "page" not in st.session_state:
     st.session_state.page = "Accueil"
 
 if "maintenance_tab" not in st.session_state:
-    st.session_state.maintenance_tab = "Tableau de bord"
+    st.session_state.maintenance_tab = "dashboard"
 
 # ---------------------------
 # CONFIG
@@ -19,24 +19,25 @@ st.set_page_config(
 )
 
 # ---------------------------
-# STYLE (DA PROCHE SCREEN)
+# STYLE (BLANC + INDUSTRIEL)
 # ---------------------------
 st.markdown("""
 <style>
 .stApp {
-    background-color: #0B0E14;
-    color: #ADBAC7;
+    background-color: #F5F6F8;
+    color: #1C1C1C;
 }
 
-/* TITRE */
-h1 {
-    color: white;
-    font-weight: 400;
+/* TITRES */
+h1, h2, h3 {
+    color: #1C1C1C;
+    font-weight: 500;
 }
 
 /* SIDEBAR */
 section[data-testid="stSidebar"] {
-    background-color: #11151C;
+    background-color: #FFFFFF;
+    border-right: 1px solid #E0E0E0;
 }
 
 /* BOUTONS MENU */
@@ -44,38 +45,38 @@ div.stButton > button {
     width: 100%;
     background-color: transparent;
     border: none;
-    color: #ADBAC7;
+    color: #333;
     text-align: left;
     padding: 10px;
+    border-radius: 4px;
 }
 
 div.stButton > button:hover {
-    background-color: #1C2128;
-    color: white;
+    background-color: #E9ECEF;
 }
 
 /* CARDS */
 .card {
-    background-color: #161B22;
+    background-color: #FFFFFF;
     padding: 20px;
     border-radius: 6px;
-    border: 1px solid #2D333B;
+    border: 1px solid #E0E0E0;
     margin-bottom: 15px;
 }
 
-/* LABEL */
-.label {
-    font-size: 12px;
-    color: #5E6772;
-    text-transform: uppercase;
-}
-
-/* INPUT */
+/* INPUTS */
 input, textarea {
-    background-color: #0B0E14 !important;
-    color: white !important;
+    background-color: #FFFFFF !important;
+    color: #000 !important;
 }
 
+/* METRICS */
+[data-testid="stMetric"] {
+    background-color: #FFFFFF;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #E0E0E0;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -84,10 +85,10 @@ input, textarea {
 # ---------------------------
 st.sidebar.markdown("### NAVIGATION")
 
-if st.sidebar.button("🏠 Accueil"):
+if st.sidebar.button("Accueil"):
     st.session_state.page = "Accueil"
 
-if st.sidebar.button("⚙️ Gestion Maintenance"):
+if st.sidebar.button("Gestion Maintenance"):
     st.session_state.page = "Maintenance"
 
 # ---------------------------
@@ -102,7 +103,7 @@ if st.session_state.page == "Accueil":
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("GESTION MAINTENANCE"):
+        if st.button("Gestion Maintenance"):
             st.session_state.page = "Maintenance"
             st.rerun()
 
@@ -113,28 +114,28 @@ elif st.session_state.page == "Maintenance":
 
     st.title("Gestion Maintenance")
 
-    # -------- SUB MENU (comme ton screen)
     col_menu, col_content = st.columns([1, 4])
 
+    # -------- MENU GAUCHE
     with col_menu:
         st.markdown("### Navigation")
 
-        if st.button("📊 Tableau de bord"):
+        if st.button("Tableau de bord"):
             st.session_state.maintenance_tab = "dashboard"
 
-        if st.button("📅 Calendrier"):
+        if st.button("Calendrier"):
             st.session_state.maintenance_tab = "calendar"
 
-        if st.button("✔️ Contrôle périodique"):
+        if st.button("Contrôle périodique"):
             st.session_state.maintenance_tab = "control"
 
-        if st.button("⏱️ Compteurs"):
+        if st.button("Compteurs"):
             st.session_state.maintenance_tab = "counters"
 
-        if st.button("👷 Intervenants"):
+        if st.button("Intervenants"):
             st.session_state.maintenance_tab = "intervenants"
 
-        if st.button("🕓 Historique"):
+        if st.button("Historique"):
             st.session_state.maintenance_tab = "history"
 
     # -------- CONTENU
@@ -142,22 +143,21 @@ elif st.session_state.page == "Maintenance":
 
         tab = st.session_state.maintenance_tab
 
-        # ---------------- DASHBOARD
+        # DASHBOARD
         if tab == "dashboard":
             st.subheader("Tableau de bord")
 
             col1, col2, col3 = st.columns(3)
-
             col1.metric("Équipements", "24")
             col2.metric("Maintenances", "3")
             col3.metric("Alertes", "1")
 
-        # ---------------- CALENDAR
+        # CALENDRIER
         elif tab == "calendar":
             st.subheader("Calendrier")
-            st.info("Calendrier à connecter")
+            st.info("Module calendrier à connecter")
 
-        # ---------------- CONTROL
+        # CONTROLES
         elif tab == "control":
             st.subheader("Contrôles périodiques")
 
@@ -166,7 +166,7 @@ elif st.session_state.page == "Maintenance":
             st.checkbox("Contrôle hebdomadaire")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # ---------------- COMPTEURS
+        # COMPTEURS
         elif tab == "counters":
             st.subheader("Compteurs")
 
@@ -175,7 +175,7 @@ elif st.session_state.page == "Maintenance":
             st.number_input("Cycles", 0, 10000, 350)
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # ---------------- INTERVENANTS (proche de ton screen)
+        # INTERVENANTS
         elif tab == "intervenants":
             st.subheader("Intervenants")
 
@@ -188,17 +188,17 @@ elif st.session_state.page == "Maintenance":
 
             st.checkbox("Intervenant extérieur")
 
-            st.markdown("Couleur")
+            st.write("Couleur")
             cols = st.columns(10)
             for i in range(10):
-                cols[i].markdown("🔘")
+                cols[i].button(" ", key=f"color_{i}")
 
             if st.button("Ajouter"):
                 st.success("Intervenant ajouté")
 
             st.markdown('</div>', unsafe_allow_html=True)
 
-        # ---------------- HISTORIQUE
+        # HISTORIQUE
         elif tab == "history":
             st.subheader("Historique")
 
