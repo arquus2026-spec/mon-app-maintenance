@@ -37,18 +37,18 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # 3. BARRE LATÉRALE (MENU DE NAVIGATION)
-st.sidebar.title("📌 Navigation")
+st.sidebar.title("Navigation")
 selection = st.sidebar.radio("Aller vers :", [
-    "🏠 Accueil", 
-    "🔧 Entretien Aire de Lavage", 
-    "📈 Historique des Données", 
-    "⚙️ Paramètres"
+    "Accueil", 
+    "Entretien Aire de Lavage", 
+    "Historique des Données", 
+    "Paramètres"
 ])
 
 # 4. LOGIQUE DES PAGES
-if selection == "🏠 Accueil":
+if selection == "Accueil":
     # Titre principal
-    st.title("🚜 GESTION DE MAINTENANCE")
+    st.title("GESTION DE MAINTENANCE")
     
     # Affichage de la date (comme demandé)
     aujourdhui = date.today().strftime("%d/%m/%Y")
