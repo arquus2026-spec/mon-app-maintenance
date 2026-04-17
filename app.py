@@ -1,153 +1,91 @@
-import streamlit as st
-from datetime import date
+elif selection == "Gestion Maintenance":
+    st.title("Gestion Maintenance")
+    st.markdown("---")
 
-# 1. CONFIGURATION DE LA PAGE
-st.set_page_config(
-    page_title="ARQUUS - Système de Maintenance",
-    layout="centered",
-    initial_sidebar_state="collapsed"
-)
-
-# 2. STYLE PROFESSIONNEL (CSS) - LA BASE FIGÉE
-st.markdown("""
+    # STYLE DES ONGLETS + ICONES (monochrome, cohérent DA)
+    st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-    html, body, [class*="st-"] {
-        font-family: 'Roboto', sans-serif;
-    }
-
-    .stApp {
-        background-color: #0B0E14;
-    }
-
-    /* Titre Principal */
-    h1 {
-        font-weight: 300 !important;
-        color: #FFFFFF !important;
-        text-align: center;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        padding-top: 1rem;
-        padding-bottom: 0.5rem;
-    }
-
-    /* Date */
-    .date-text {
-        text-align: center;
-        color: #5E6772;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 3rem;
-    }
-
-    /* Boutons : Style Industriel */
-    div.stButton > button {
-        width: 100%;
-        border-radius: 4px;
-        border: 1px solid #2D333B;
-        background-color: #161B22;
-        color: #ADBAC7;
-        padding: 35px 10px;
+    .tab-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         font-size: 13px;
-        font-weight: 400;
-        text-transform: uppercase;
         letter-spacing: 1px;
-        transition: all 0.2s ease;
-        line-height: 1.5;
+        text-transform: uppercase;
     }
-
-    /* Hover */
-    div.stButton > button:hover {
-        border-color: #E62E2E;
-        color: white;
-        background-color: #1C2128;
+    .tab-icon {
+        width: 14px;
+        height: 14px;
+        background-color: #ADBAC7;
+        display: inline-block;
+        border-radius: 2px;
     }
-    
-    /* Nettoyage interface */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
-# 3. LOGO ARQUUS EN HAUT À GAUCHE
-col_logo, _ = st.columns([1, 4])
-with col_logo:
-    st.image("https://www.arquus-defense.com/themes/custom/arquus/logo.svg", width=120)
+    # CRÉATION DES ONGLETS
+    tabs = st.tabs([
+        "📊 Tableau de bord",
+        "📅 Calendrier",
+        "✔️ Contrôles périodiques",
+        "⏱️ Compteurs",
+        "👷 Intervenants",
+        "🕓 Historique"
+    ])
 
-# 4. NAVIGATION LATÉRALE
-st.sidebar.markdown("### MODULES")
-selection = st.sidebar.radio("Sélectionner une unité :", [
-    "Accueil", 
-    "Unité Opérateur", 
-    "Unité Technicien", 
-    "Intervenants Extérieurs",
-    "Gestion Maintenance"
-])
+    # CONTENU DES ONGLETS
 
-# 5. LOGIQUE DES PAGES
-if selection == "Accueil":
-    st.title("Entretien | AIRE DE LAVAGE – ARQUUS")
-    aujourdhui = date.today().strftime("%d . %m . %Y")
-    st.markdown(f"<p class='date-text'>Date : {aujourdhui}</p>", unsafe_allow_html=True)
-    
-    col_l, col_main, col_r = st.columns([1, 6, 1])
-    with col_main:
-        grid_col1, grid_col2 = st.columns(2)
-        with grid_col1:
-            if st.button("Opérateur"):
-                st.info("Accès Opérateur...")
-            if st.button("Technicien"):
-                st.info("Accès Technicien...")
-        with grid_col2:
-            if st.button("Intervenants"):
-                st.info("Accès Intervenants...")
-            if st.button("Gestion maintenance"):
-                st.info("Redirection vers Gestion...")
+    # 1. TABLEAU DE BORD
+    with tabs[0]:
+        st.subheader("Tableau de bord")
+        st.write("Vue globale de l'état de la maintenance.")
+        
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Équipements actifs", "24")
+        col2.metric("Maintenances en cours", "3")
+        col3.metric("Alertes", "1", delta="-1")
 
-elif selection == "Gestion Maintenance":
-    st.title("Gestion Maintenance")
-    st.markdown("<p class='date-text'>Administration du système</p>", unsafe_allow_html=True)
-    
-    # Grille de 6 boutons (3 colonnes x 2 lignes)
-    row1_col1, row1_col2, row1_col3 = st.columns(3)
-    row2_col1, row2_col2, row2_col3 = st.columns(3)
+    # 2. CALENDRIER
+    with tabs[1]:
+        st.subheader("Calendrier")
+        st.write("Planification des interventions.")
+        st.info("Module calendrier à connecter (FullCalendar ou autre).")
 
-    with row1_col1:
-        if st.button("📊\nTableau de bord"):
-            st.write("Module Tableau de bord")
-            
-    with row1_col2:
-        if st.button("📅\nCalendrier"):
-            st.write("Module Calendrier")
-            
-    with row1_col3:
-        if st.button("🛡️\nContrôle périodique"):
-            st.write("Module Contrôles")
+    # 3. CONTRÔLES PÉRIODIQUES
+    with tabs[2]:
+        st.subheader("Contrôles périodiques")
+        st.write("Liste des contrôles réglementaires et techniques.")
 
-    with row2_col1:
-        if st.button("⏲️\nCompteurs"):
-            st.write("Module Compteurs")
-            
-    with row2_col2:
-        if st.button("👥\nIntervenants"):
-            st.write("Module Intervenants")
-            
-    with row2_col3:
-        if st.button("📜\nHistorique"):
-            st.write("Module Historique")
+        st.checkbox("Nettoyage filtres")
+        st.checkbox("Inspection visuelle")
+        st.checkbox("Contrôle pression")
 
-    st.markdown("---")
-    if st.button("⬅️ Retour au menu"):
-        st.write("Utilisez le menu latéral pour naviguer")
+    # 4. COMPTEURS
+    with tabs[3]:
+        st.subheader("Compteurs")
+        st.write("Suivi des heures et cycles machines.")
 
-elif selection == "Unité Opérateur":
-    st.title("Unité Opérateur")
-    st.markdown("---")
-    st.write("Interface de saisie opérateur.")
+        st.number_input("Heures de fonctionnement", value=1200)
+        st.number_input("Cycles effectués", value=350)
 
-else:
-    st.title(selection)
-    st.write("Module en cours de configuration.")
+    # 5. INTERVENANTS
+    with tabs[4]:
+        st.subheader("Intervenants")
+        st.write("Gestion des techniciens et prestataires.")
+
+        st.text_input("Nom intervenant")
+        st.selectbox("Type", ["Technicien interne", "Prestataire externe"])
+
+        if st.button("Ajouter intervenant"):
+            st.success("Intervenant ajouté.")
+
+    # 6. HISTORIQUE
+    with tabs[5]:
+        st.subheader("Historique")
+        st.write("Historique des opérations réalisées.")
+
+        st.table({
+            "Date": ["01/03/2026", "15/03/2026"],
+            "Action": ["Contrôle filtre", "Remplacement pompe"],
+            "Intervenant": ["Dupont", "Société X"]
+        })
